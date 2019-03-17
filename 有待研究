@@ -1,0 +1,2 @@
+#流备份和压缩备份
+#innobackupex --host=$host_ip --port=$port --user=$user --password=$pass --datadir=$data_dir --databases="$database_name" --backup --stream=tar ./ | ssh root@192.168.1.13 \ "gzip > $backup_dir/bak.tar.gz"
