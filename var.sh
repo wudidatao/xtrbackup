@@ -1,4 +1,7 @@
+#!/bin/bash
+
 backup_dir=/data/backups
+#备份周期天数
 days=7
 base_backup_time=`date "+%G-%m-%d"`
 base_backup_dir=`find $backup_dir -name $base_backup_time -ctime -$days`
