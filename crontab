@@ -1,2 +1,4 @@
 #每分钟备份一次
 */1 * * * * /root/xtrbackup/xtrbackup_backup.sh > /data/backups/backup-`date "+\%G:\%m:\%d-\%H:\%M:\%S"`.log 2>&1
+#每天0点备份
+0 0 * * * /root/xtrbackup/xtrbackup_backup.sh > /data/backups/backup-`date "+\%G:\%m:\%d-\%H:\%M:\%S"`.log 2>&1
