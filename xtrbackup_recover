@@ -1,0 +1,28 @@
+#!/bin/bash
+
+. ./var.sh
+
+docker stop test-mysql-5.7.18-3306
+
+cd /data/mysql/5.7.18-3306/data/
+
+rm ib_logfile0 ib_logfile1 ibdata1 ib_buffer_pool mysql/ performance_schema/ sys/ test/ xtrabackup_info xtrabackup_binlog_pos_innodb xtrabackup_master_key_id -rf
+
+#如果想恢复第一次全量(感觉这个还是有问题的，不能写在一起，应该先--apply-log，再--copy-back，和下面恢复的一样)
+xtrabackup --host=$remote_ip --port=$port --user=$user --password=$pass --datadir=$data_dir --databases="$database_name" --prepare --apply-log-only --target-dir=$backup_dir/$base_backup_time/base/
+xtrabackup --host=$remote_ip --port=$port --user=$user --password=$pass --datadir=$data_dir --databases="$database_name" --copy-back --force-non-empty-directories --target-dir=$backup_dir/$base_backup_time/base/
+
+#如果想恢复第一次增量（最后的一次--copy-back执行因为已经执行过日志，--apply-log-only没用了，不用加）
+#xtrabackup --host=$remote_ip --port=$port --user=$user --password=$pass --datadir=$data_dir --databases="$database_name" --prepare --apply-log-only --target-dir=$backup_dir/$base_backup_time/base/
+#xtrabackup --host=$remote_ip --port=$port --user=$user --password=$pass --datadir=$data_dir --databases="$database_name" --prepare --apply-log-only --target-dir=$backup_dir/$base_backup_time/base/ --incremental-dir=$backup_dir/$base_backup_time/inc1
+#xtrabackup --host=$remote_ip --port=$port --user=$user --password=$pass --datadir=$data_dir --databases="$database_name" --copy-back --force-non-empty-directories --target-dir=$backup_dir/$base_backup_time/base/
+
+#如果想恢复第二次增量
+#xtrabackup --host=$remote_ip --port=$port --user=$user --password=$pass --datadir=$data_dir --databases="$database_name" --prepare --apply-log-only --target-dir=$backup_dir/$base_backup_time/base/
+#xtrabackup --host=$remote_ip --port=$port --user=$user --password=$pass --datadir=$data_dir --databases="$database_name" --prepare --apply-log-only --target-dir=$backup_dir/$base_backup_time/base/ --incremental-dir=$backup_dir/$base_backup_time/inc1
+#xtrabackup --host=$remote_ip --port=$port --user=$user --password=$pass --datadir=$data_dir --databases="$database_name" --prepare --apply-log-only --target-dir=$backup_dir/$base_backup_time/base/ --incremental-dir=$backup_dir/$base_backup_time/inc2
+#xtrabackup --host=$remote_ip --port=$port --user=$user --password=$pass --datadir=$data_dir --databases="$database_name" --copy-back --force-non-empty-directories --target-dir=$backup_dir/$base_backup_time/base/
+
+cd /data/mysql/5.7.18-3306/data
+
+chown -R polkitd:input ib_logfile0 ib_logfile1 ib_buffer_pool ibdata1 mysql performance_schema  sys test xtrabackup_info xtrabackup_master_key_id
