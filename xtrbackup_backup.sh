@@ -1,6 +1,7 @@
 
 #!/bin/bash
 
+#标准本地备份
 backup_dir=/data/backups
 days=7
 base_backup_time=`date "+%G-%m-%d"`
